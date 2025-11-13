@@ -14,6 +14,7 @@ printf("hello, %d", 100);
 ## フォーマット指定子
 %c : char  
 %d int, short
+%u unsigned int, unsigned short
 `,
 		},
 		{
