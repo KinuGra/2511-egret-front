@@ -1,9 +1,13 @@
 import { Snippet } from "@/types/snippet";
 import SnippetCard from "./components/SnippetCard";
+import EngineerComparisonProgress from "./components/EngineerComparisonProgress";
 
 export default function ProfileScreen() {
 	return (
 		<>
+			<EngineerComparisonProgress comparison={topEngineerData} />
+			<EngineerComparisonProgress comparison={surroundingEngineerData} />
+
 			<div style={{ backgroundColor: "#efefef" }}>
 				{data.map((snippet) => (
 					<div key={snippet.id}>
@@ -91,3 +95,16 @@ async def read_item(item_id: int, q: str | None = None):
 `,
 	},
 ];
+
+const topEngineerData = {
+	title: "トップエンジニアとの比較",
+	myScore: 650,
+	targetScore: 800,
+	colorCode: "red",
+};
+const surroundingEngineerData = {
+	title: "周囲のエンジニアとの比較",
+	myScore: 500,
+	targetScore: 550,
+	colorCode: "orange",
+};
