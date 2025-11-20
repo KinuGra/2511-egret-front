@@ -97,13 +97,13 @@ async def read_item(item_id: int, q: str | None = None):
 ];
 
 const topEngineerData = {
-	title: "トップエンジニアとの比較",
+	title: "VS 活躍する学生",
 	myScore: 650,
 	targetScore: 800,
 	colorCode: "red",
 };
 const surroundingEngineerData = {
-	title: "周囲のエンジニアとの比較",
+	title: "VS 他プレイヤー",
 	myScore: 500,
 	targetScore: 550,
 	colorCode: "orange",
