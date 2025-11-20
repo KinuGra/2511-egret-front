@@ -1,7 +1,15 @@
+import { Comparison } from "@/types/comparison";
 import styles from "./EngineerComparisonProgress.module.css";
-export default function EngineerComparisonProgress({ comparison }) {
+export default function EngineerComparisonProgress({
+  comparison,
+}: {
+  comparison: Comparison;
+}) {
   // percentageは数値として計算し、toFixed(1)は表示時のみにする
-  const rawPercentage = (comparison.myScore / comparison.targetScore) * 100;
+  const rawPercentage =
+    comparison.targetScore > 0
+      ? (comparison.myScore / comparison.targetScore) * 100
+      : 0;
 
   // プログレスバーの長さ。100%を超えないように調整
   const progressBarWidth = Math.min(100, rawPercentage).toFixed(1);
@@ -16,7 +24,7 @@ export default function EngineerComparisonProgress({ comparison }) {
   return (
     <>
       <div className={styles.card}>
-        <div className={styles.barContaier}>
+        <div className={styles.barContainer}>
           {/* プログレスバーの背景と進捗 */}
           <div className={styles.progressBarBackground}>
             <div
@@ -39,7 +47,7 @@ export default function EngineerComparisonProgress({ comparison }) {
 
             {/* 右側のテキスト */}
             <div className={styles.rightInfo}>
-              <div className={`${styles.delayBadge} ${styles.colorClass}`}>
+              <div className={`${styles.delayBadge}`}>
                 遅れ：{delayPercentage}%
               </div>
               <div className={styles.targetLabel}>目標スコア</div>
