@@ -27,16 +27,17 @@ export default function EngineerComparisonProgress({ comparison }) {
 
           {/* テキストオーバーレイ */}
           <div className={styles.textOverlay}>
+            {/* 左側のテキスト */}
             <div className={styles.leftInfo}>
               <div className={styles.title}>{comparison.title}</div>
-              <div className={`${styles.percentage} ${colorClass}`}>
-                {progressBarWidth}%
-              </div>
+              <div className={styles.percentage}>{progressBarWidth}%</div>
               <div className={styles.myScore}>
                 My Score:{" "}
                 <span className="font-bold">{comparison.myScore}</span> pt
               </div>
             </div>
+
+            {/* 右側のテキスト */}
             <div className={styles.rightInfo}>
               <div className={`${styles.delayBadge} ${styles.colorClass}`}>
                 遅れ：{delayPercentage}%

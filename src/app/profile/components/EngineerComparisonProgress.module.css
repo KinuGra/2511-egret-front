@@ -57,6 +57,7 @@
   font-size: 2rem;
   font-weight: 700;
   line-height: 1.1;
+  color: crimson;
 }
 
 .myScore {
@@ -75,6 +76,16 @@
   z-index: 10;
 }
 
+.delayBadge {
+  font-size: 12px;
+  font-weight: 700;
+  color: red;
+  background-color: white;
+  border-radius: 100px;
+  padding: 2px;
+  margin-bottom: 5px;
+}
+
 .targetLabel {
   font-size: 16px;
   font-weight: bold;
@@ -84,4 +95,12 @@
   font-size: 30px;
   font-weight: 700;
   line-height: 1.1;
+}
+
+.colorRed {
+  background: linear-gradient(to right, #dea0a0, #ef3d3d);
+}
+
+.colorOrange {
+  background: linear-gradient(to right, #ffc973, #ff8c00);
 }
