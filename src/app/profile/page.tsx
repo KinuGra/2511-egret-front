@@ -5,10 +5,10 @@ import EngineerComparisonProgress from "./components/EngineerComparisonProgress"
 export default function ProfileScreen() {
 	return (
 		<>
-			<EngineerComparisonProgress comparison={topEngineerData} />
-			<EngineerComparisonProgress comparison={surroundingEngineerData} />
-
 			<div style={{ backgroundColor: "#efefef" }}>
+				<EngineerComparisonProgress comparison={topEngineerData} />
+				<EngineerComparisonProgress comparison={surroundingEngineerData} />
+
 				{data.map((snippet) => (
 					<div key={snippet.id}>
 						<SnippetCard
