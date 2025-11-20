@@ -6,7 +6,10 @@ export default function EngineerComparisonProgress({
   comparison: Comparison;
 }) {
   // percentageは数値として計算し、toFixed(1)は表示時のみにする
-  const rawPercentage = (comparison.myScore / comparison.targetScore) * 100;
+  const rawPercentage =
+    comparison.targetScore > 0
+      ? (comparison.myScore / comparison.targetScore) * 100
+      : 0;
 
   // プログレスバーの長さ。100%を超えないように調整
   const progressBarWidth = Math.min(100, rawPercentage).toFixed(1);
@@ -21,7 +24,7 @@ export default function EngineerComparisonProgress({
   return (
     <>
       <div className={styles.card}>
-        <div className={styles.barContaier}>
+        <div className={styles.barContainer}>
           {/* プログレスバーの背景と進捗 */}
           <div className={styles.progressBarBackground}>
             <div
