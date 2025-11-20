@@ -28,7 +28,7 @@
 .progressBar {
   height: 100%;
   border-radius: 8px 0 0 8px;
-  transition: witdh 0.5s ease;
+  transition: width 0.5s ease;
 }
 
 .textOverlay {

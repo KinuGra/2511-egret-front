@@ -1,5 +1,10 @@
+import { Comparison } from "@/types/comparison";
 import styles from "./EngineerComparisonProgress.module.css";
-export default function EngineerComparisonProgress({ comparison }) {
+export default function EngineerComparisonProgress({
+  comparison,
+}: {
+  comparison: Comparison;
+}) {
   // percentageは数値として計算し、toFixed(1)は表示時のみにする
   const rawPercentage = (comparison.myScore / comparison.targetScore) * 100;
 
@@ -39,7 +44,7 @@ export default function EngineerComparisonProgress({ comparison }) {
 
             {/* 右側のテキスト */}
             <div className={styles.rightInfo}>
-              <div className={`${styles.delayBadge} ${styles.colorClass}`}>
+              <div className={`${styles.delayBadge}`}>
                 遅れ：{delayPercentage}%
               </div>
               <div className={styles.targetLabel}>目標スコア</div>
