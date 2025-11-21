@@ -1,0 +1,246 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 1010;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.formContainer {
+  position: fixed;
+  top: 10vh;
+  right: 10vw;
+  width: 80vw;
+  height: 80vh;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1020;
+  transform-origin: top right;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideAndGrowIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideAndGrowOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px) scale(0.95);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.formEnter {
+  animation: slideAndGrowIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.formExit {
+  animation: slideAndGrowOut 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+/* --- Header & Close Button --- */
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.formHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: #dcdcdc;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #555;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.closeButton:hover {
+  background: #ccc;
+}
+
+/* --- Body & Form --- */
+.formBody {
+  padding: 1.5rem;
+  overflow-y: hidden;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-family: inherit;
+}
+
+.submitButton {
+    background-color: #F59E0B; /* Orange */
+    color: white;
+    border: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 1rem;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #D97706; /* Darker Orange */
+}
+
+/* --- Editor & Preview Layout --- */
+.editorLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  flex-grow: 1;
+  min-height: 0; /* Prevents flexbox overflow */
+}
+
+.editorLayout textarea {
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-family: inherit;
+  resize: none;
+}
+
+.previewArea {
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  background-color: #f9f9f9;
+}
+
+.hidden {
+  display: none;
+}
+
+/* --- View Toggler (for Mobile) --- */
+.viewToggle {
+  display: none; /* Hidden by default */
+  width: 100%;
+  background-color: #e9e9e9;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 1rem;
+}
+
+.viewToggle button {
+  width: 50%;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #555;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.viewToggle button.active {
+  background-color: #fff;
+  color: #0070f3;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .formContainer {
+    width: 90vw;
+    height: 85vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: fadeIn 0.3s ease-out; /* Simpler animation for mobile */
+  }
+
+  .formExit {
+     animation: fadeOut 0.3s ease-in forwards;
+  }
+
+  .editorLayout {
+    grid-template-columns: 1fr; /* Stack them */
+  }
+
+  .viewToggle {
+    display: flex; /* Show the toggle on mobile */
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.errorText {
+  color: #e53e3e; /* Red */
+  font-size: 0.875rem;
+  text-align: center;
+  margin: -0.5rem 0 1rem 0;
+}
+
