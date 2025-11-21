@@ -109,7 +109,7 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose }) => {
           </div>
           
           {error && <p className={styles.errorText}>{error}</p>}
-          <button type="submit" className={styles.submitButton}>保存する</button>
+          <button type="submit" className={styles.submitButton}>投稿する</button>
         </form>
       </div>
     </>
