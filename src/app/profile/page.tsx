@@ -6,12 +6,47 @@ import SnippetCard from "./components/SnippetCard";
 import EngineerComparisonProgress from "./components/EngineerComparisonProgress";
 import EditButton from "./components/EditButton";
 import EditForm from "./components/EditForm";
+import Notification from "./components/Notification";
 
 export default function ProfileScreen() {
 	const [isFormVisible, setIsFormVisible] = useState(false);
+	const [notification, setNotification] = useState<{
+		title: string;
+		content: string;
+		snippetScore: number;
+	} | null>(null);
+
+	const handleShowNotification = () => {
+		setNotification({
+			title: "C言語のprintf",
+			content: `# 基本的な書き方
+\`\`\`c
+printf("hello, %d", 100);
+\`\`\`
+## フォーマット指定子
+- %c : char  
+- %d int, short
+- %u unsigned int, unsigned short
+- %f float, dou
+- %s char*
+- %p ポインタの値
+\`\`\`
+`,
+			snippetScore: 850,
+		});
+	};
+
 
 	return (
 		<>
+			{notification && (
+				<Notification
+					title={notification.title}
+					content={notification.content}
+					snippetScore={notification.snippetScore}
+					onClose={() => setNotification(null)}
+				/>
+			)}
 			<div style={{ backgroundColor: "#efefef" }}>
 				<EngineerComparisonProgress comparison={topEngineerData} />
 				<EngineerComparisonProgress comparison={surroundingEngineerData} />
@@ -25,6 +60,14 @@ export default function ProfileScreen() {
 						/>
 					</div>
 				))}
+			</div>
+			<div className="fixed bottom-4 right-20 z-40">
+				<button
+					onClick={handleShowNotification}
+					className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-colors"
+				>
+					🔔
+				</button>
 			</div>
 			<EditButton onClick={() => setIsFormVisible(true)} />
 			<EditForm isOpen={isFormVisible} onClose={() => setIsFormVisible(false)} />
