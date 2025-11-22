@@ -38,6 +38,7 @@ const EditForm: React.FC<EditFormProps> = ({
   const [scoreSummary, setScoreSummary] = useState<ScoreSummary | null>(null);
   const [posting, setPosting] = useState(false);
   const [posted, setPosted] = useState(false);
+  const [isScoring, setIsScoring] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Effect to handle mount/unmount animations
@@ -68,16 +69,24 @@ const EditForm: React.FC<EditFormProps> = ({
       return;
     }
 
-    // Bedrockによる採点
-    const evaluationResult = await fetchScoreFromAWS(content, content.length);
-    console.log("evaluationResult: ", evaluationResult);
-    // Normalize into UI-friendly summary (handles nulls and rounding)
-    const summary = computeScoreSummary(evaluationResult);
-    setScoreSummary(summary);
-    // 投稿を行い、完了後に親に結果を渡してフォームを閉じる
-    await handleConfirmPost(summary);
-    if (onShowScore) onShowScore(summary);
-    onClose();
+    setIsScoring(true);
+    try {
+      // Bedrockによる採点
+      const evaluationResult = await fetchScoreFromAWS(content, content.length);
+      console.log("evaluationResult: ", evaluationResult);
+      // Normalize into UI-friendly summary (handles nulls and rounding)
+      const summary = computeScoreSummary(evaluationResult);
+      setScoreSummary(summary);
+      // 投稿を行い、完了後に親に結果を渡してフォームを閉じる
+      await handleConfirmPost(summary);
+      if (onShowScore) onShowScore(summary);
+      onClose();
+    } catch (err) {
+      console.error("採点中にエラーが発生しました", err);
+      setError("採点に失敗しました。時間をおいて再度お試しください。");
+    } finally {
+      setIsScoring(false);
+    }
   };
 
   const handleConfirmPost = async (providedSummary?: ScoreSummary | null) => {
@@ -129,6 +138,8 @@ const EditForm: React.FC<EditFormProps> = ({
     return null;
   }
 
+  const isBusy = posting || isScoring;
+
   const ViewToggle = () => (
     <div className={styles.viewToggle}>
       <button
@@ -153,6 +164,7 @@ const EditForm: React.FC<EditFormProps> = ({
         className={`${styles.formContainer} ${
           isOpen ? styles.formEnter : styles.formExit
         }`}
+        aria-busy={isBusy}
       >
         <div className={styles.formHeader}>
           <h2>スニペットを書く</h2>
@@ -166,11 +178,12 @@ const EditForm: React.FC<EditFormProps> = ({
             <input
               type="text"
               id="snippet-title"
-              placeholder="スニペットのタイトル"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
+                placeholder="スニペットのタイトル"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={isBusy}
+              />
+            </div>
 
           <div
             className={styles.formGroup}
@@ -191,6 +204,7 @@ const EditForm: React.FC<EditFormProps> = ({
                 placeholder="コードやメモを入力..."
                 value={content}
                 onChange={handleContentChange}
+                disabled={isBusy}
                 className={
                   isMobile && viewMode === "preview" ? styles.hidden : ""
                 }
@@ -206,10 +220,18 @@ const EditForm: React.FC<EditFormProps> = ({
           </div>
 
           {error && <p className={styles.errorText}>{error}</p>}
-          <button type="submit" className={styles.submitButton}>
-            投稿する
+          <button type="submit" className={styles.submitButton} disabled={isBusy}>
+            {isBusy ? "採点中..." : "投稿する"}
           </button>
         </form>
+        {isBusy && (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.loadingSpinner} aria-hidden="true" />
+            <p className={styles.loadingText}>
+              {isScoring ? "採点結果を取得しています" : "投稿処理中です"}
+            </p>
+          </div>
+        )}
       </div>
       {/* ScoreResultPopup is displayed and managed by parent (ProfileScreen) */}
     </>
