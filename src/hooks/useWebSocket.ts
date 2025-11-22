@@ -36,4 +36,14 @@ export const useWebSocket = ({ url, onMessage }: UseWebSocketOptions) => {
 			ws.current?.close();
 		};
 	}, [url, onMessage]);
+
+	const sendMessage = (data: any) => {
+		if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+			ws.current.send(JSON.stringify(data));
+		} else {
+			console.error("WebSocket is not connected");
+		}
+	};
+
+	return { sendMessage };
 };
