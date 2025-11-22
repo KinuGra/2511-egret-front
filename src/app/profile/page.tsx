@@ -18,7 +18,7 @@ export default function ProfileScreen() {
 	} | null>(null);
 
 	const { sendMessage } = useWebSocket({
-		url: "wss://0prqanzwqa.execute-api.ap-northeast-1.amazonaws.com/Prod/",
+		url: "wss://0azgrfwv7j.execute-api.ap-northeast-1.amazonaws.com/Prod/",
 		onMessage: (data) => {
 			setNotification(data);
 		},
@@ -49,8 +49,8 @@ export default function ProfileScreen() {
 				))}
 			</div>
 			<EditButton onClick={() => setIsFormVisible(true)} />
-			<EditForm 
-				isOpen={isFormVisible} 
+			<EditForm
+				isOpen={isFormVisible}
 				onClose={() => setIsFormVisible(false)}
 				sendMessage={sendMessage}
 			/>
