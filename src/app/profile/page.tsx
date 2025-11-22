@@ -7,6 +7,7 @@ import EngineerComparisonProgress from "./components/EngineerComparisonProgress"
 import EditButton from "./components/EditButton";
 import EditForm from "./components/EditForm";
 import Notification from "./components/Notification";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function ProfileScreen() {
 	const [isFormVisible, setIsFormVisible] = useState(false);
@@ -16,26 +17,12 @@ export default function ProfileScreen() {
 		snippetScore: number;
 	} | null>(null);
 
-	const handleShowNotification = () => {
-		setNotification({
-			title: "C言語のprintf",
-			content: `# 基本的な書き方
-\`\`\`c
-printf("hello, %d", 100);
-\`\`\`
-## フォーマット指定子
-- %c : char  
-- %d int, short
-- %u unsigned int, unsigned short
-- %f float, dou
-- %s char*
-- %p ポインタの値
-\`\`\`
-`,
-			snippetScore: 850,
-		});
-	};
-
+	useWebSocket({
+		url: "wss://0prqanzwqa.execute-api.ap-northeast-1.amazonaws.com/Prod/",
+		onMessage: (data) => {
+			setNotification(data);
+		},
+	});
 
 	return (
 		<>
@@ -60,14 +47,6 @@ printf("hello, %d", 100);
 						/>
 					</div>
 				))}
-			</div>
-			<div className="fixed bottom-4 right-20 z-40">
-				<button
-					onClick={handleShowNotification}
-					className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-colors"
-				>
-					🔔
-				</button>
 			</div>
 			<EditButton onClick={() => setIsFormVisible(true)} />
 			<EditForm isOpen={isFormVisible} onClose={() => setIsFormVisible(false)} />
