@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import styles from './EditForm.module.css';
-import MarkdownText from '@/components/MarkdownText';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { sendSnippetToWebSocket } from './snippetService';
+import React, { useEffect, useState } from "react";
+import styles from "./EditForm.module.css";
+import MarkdownText from "@/components/MarkdownText";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { sendSnippetToWebSocket } from "./snippetService";
+import { addSnippet } from "../../../lib/firestore/addSnippet";
 
 interface EditFormProps {
   isOpen: boolean;
@@ -12,15 +13,19 @@ interface EditFormProps {
   sendMessage: (data: any) => void;
 }
 
-type ViewMode = 'write' | 'preview';
+type ViewMode = "write" | "preview";
 
-const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose, sendMessage }) => {
+const EditForm: React.FC<EditFormProps> = ({
+  isOpen,
+  onClose,
+  sendMessage,
+}) => {
   const [isRendered, setIsRendered] = useState(isOpen);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('write');
-  const [error, setError] = useState('');
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("write");
+  const [error, setError] = useState("");
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Effect to handle mount/unmount animations
   useEffect(() => {
@@ -35,26 +40,33 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose, sendMessage }) => 
   // Effect to reset content and view when the form is opened
   useEffect(() => {
     if (isOpen) {
-      setContent('## Hello, Markdown!\n\n```javascript\nconsole.log("Hello, World!");\n```');
-      setViewMode('write'); // Default to write mode on open
-      setError(''); // Reset error on open
+      setContent(
+        '## Hello, Markdown!\n\n```javascript\nconsole.log("Hello, World!");\n```',
+      );
+      setViewMode("write"); // Default to write mode on open
+      setError(""); // Reset error on open
     }
   }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) {
-      setError('内容は必須です。入力してください。');
+      setError("内容は必須です。入力してください。");
       return;
     }
     sendSnippetToWebSocket(sendMessage, title, content);
+    addSnippet({
+      title: title,
+      content: content,
+      snippetScore: 10000, //TODO 仮置き
+    });
     onClose();
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
     if (error) {
-      setError('');
+      setError("");
     }
   };
 
@@ -65,14 +77,14 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose, sendMessage }) => 
   const ViewToggle = () => (
     <div className={styles.viewToggle}>
       <button
-        onClick={() => setViewMode('write')}
-        className={viewMode === 'write' ? styles.active : ''}
+        onClick={() => setViewMode("write")}
+        className={viewMode === "write" ? styles.active : ""}
       >
         Write
       </button>
       <button
-        onClick={() => setViewMode('preview')}
-        className={viewMode === 'preview' ? styles.active : ''}
+        onClick={() => setViewMode("preview")}
+        className={viewMode === "preview" ? styles.active : ""}
       >
         Preview
       </button>
@@ -82,26 +94,38 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose, sendMessage }) => 
   return (
     <>
       <div className={styles.overlay} onClick={onClose} />
-      <div className={`${styles.formContainer} ${isOpen ? styles.formEnter : styles.formExit}`}>
+      <div
+        className={`${styles.formContainer} ${isOpen ? styles.formEnter : styles.formExit}`}
+      >
         <div className={styles.formHeader}>
           <h2>スニペットを書く</h2>
-          <button onClick={onClose} className={styles.closeButton}>&times;</button>
+          <button onClick={onClose} className={styles.closeButton}>
+            &times;
+          </button>
         </div>
         <form className={styles.formBody} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="snippet-title">タイトル</label>
-            <input 
-              type="text" 
-              id="snippet-title" 
-              placeholder="スニペットのタイトル" 
+            <input
+              type="text"
+              id="snippet-title"
+              placeholder="スニペットのタイトル"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
-          <div className={styles.formGroup} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div
+            className={styles.formGroup}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+            }}
+          >
             <label htmlFor="snippet-content">内容</label>
-            
+
             {isMobile && <ViewToggle />}
 
             <div className={styles.editorLayout}>
@@ -110,16 +134,22 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose, sendMessage }) => 
                 placeholder="コードやメモを入力..."
                 value={content}
                 onChange={handleContentChange}
-                className={isMobile && viewMode === 'preview' ? styles.hidden : ''}
+                className={
+                  isMobile && viewMode === "preview" ? styles.hidden : ""
+                }
               />
-              <div className={`${styles.previewArea} ${isMobile && viewMode === 'write' ? styles.hidden : ''}`}>
+              <div
+                className={`${styles.previewArea} ${isMobile && viewMode === "write" ? styles.hidden : ""}`}
+              >
                 <MarkdownText content={content} />
               </div>
             </div>
           </div>
-          
+
           {error && <p className={styles.errorText}>{error}</p>}
-          <button type="submit" className={styles.submitButton}>投稿する</button>
+          <button type="submit" className={styles.submitButton}>
+            投稿する
+          </button>
         </form>
       </div>
     </>
