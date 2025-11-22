@@ -106,3 +106,77 @@ export async function fetchScoreFromAWS(index: string, indexvalue: number): Prom
     return null;
   }
 }
+
+export type ScoreSummary = {
+  finalWeightedScore: number; // integer
+  finalWeightedScoreRaw: number; // original float value from API or computed
+  averageQualityScore: number; // percentage integer 0-100
+  individualScores: Record<string, number>; // percentage integers
+  characterCount: number;
+  calculationSteps: CalculationSteps;
+  justification: Justification;
+};
+
+/**
+ * Normalize parsed AWS response into a display-friendly summary.
+ * If `parsed` is null, returns zeros and empty objects.
+ */
+export function computeScoreSummary(parsed: AwsParsedResponse | null): ScoreSummary {
+  if (!parsed) {
+    return {
+      finalWeightedScore: 0,
+      averageQualityScore: 0,
+      individualScores: {},
+      characterCount: 0,
+      calculationSteps: {},
+      justification: {},
+    };
+  }
+
+  const characterCount = Number(parsed.character_count ?? 0) || 0;
+
+  // Determine average quality score (0..1).
+  let avg = 0;
+  if (typeof parsed.final_results?.average_quality_score === "number") {
+    avg = parsed.final_results.average_quality_score as number;
+  } else if (typeof parsed.average_quality_score === "number") {
+    avg = parsed.average_quality_score as number;
+  } else if (parsed.scores) {
+    const vals = Object.values(parsed.scores).filter((v) => typeof v === "number") as number[];
+    if (vals.length > 0) {
+      avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    }
+  }
+
+  const averageQualityScore = Number.isFinite(avg) ? Math.round(avg * 100) : 0;
+
+  // Final weighted score: prefer final_results.final_weighted_score, or compute avg * characterCount
+  let finalRaw = parsed.final_results?.final_weighted_score;
+  if (typeof finalRaw !== "number" || !Number.isFinite(finalRaw)) {
+    if (Number.isFinite(avg) && characterCount > 0) {
+      finalRaw = avg * characterCount;
+    } else {
+      finalRaw = 0;
+    }
+  }
+  const finalWeightedScoreRaw = Number.isFinite(Number(finalRaw)) ? Number(finalRaw) : 0;
+  const finalWeightedScore = Number.isFinite(finalWeightedScoreRaw) ? Math.round(finalWeightedScoreRaw) : 0;
+
+  const individualScores: Record<string, number> = {};
+  if (parsed.scores) {
+    for (const [k, v] of Object.entries(parsed.scores)) {
+      const n = Number(v ?? 0);
+      individualScores[k] = Number.isFinite(n) ? Math.round(n * 100) : 0;
+    }
+  }
+
+  return {
+    finalWeightedScore,
+    finalWeightedScoreRaw,
+    averageQualityScore,
+    individualScores,
+    characterCount,
+    calculationSteps: parsed.calculation_steps ?? {},
+    justification: parsed.justification ?? {},
+  };
+}
