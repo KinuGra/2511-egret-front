@@ -4,16 +4,19 @@ import React, { useEffect, useState } from 'react';
 import styles from './EditForm.module.css';
 import MarkdownText from '@/components/MarkdownText';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { sendSnippetToWebSocket } from './snippetService';
 
 interface EditFormProps {
   isOpen: boolean;
   onClose: () => void;
+  sendMessage: (data: any) => void;
 }
 
 type ViewMode = 'write' | 'preview';
 
-const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose }) => {
+const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose, sendMessage }) => {
   const [isRendered, setIsRendered] = useState(isOpen);
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('write');
   const [error, setError] = useState('');
@@ -44,6 +47,7 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose }) => {
       setError('内容は必須です。入力してください。');
       return;
     }
+    sendSnippetToWebSocket(sendMessage, title, content);
     onClose();
   };
 
@@ -86,7 +90,13 @@ const EditForm: React.FC<EditFormProps> = ({ isOpen, onClose }) => {
         <form className={styles.formBody} onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="snippet-title">タイトル</label>
-            <input type="text" id="snippet-title" placeholder="スニペットのタイトル" />
+            <input 
+              type="text" 
+              id="snippet-title" 
+              placeholder="スニペットのタイトル" 
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </div>
 
           <div className={styles.formGroup} style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
