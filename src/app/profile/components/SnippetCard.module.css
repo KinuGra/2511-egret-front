@@ -15,4 +15,13 @@
   font-weight: bold;
   border-bottom: 3px solid #ff6b6b;
   margin-bottom: 1.5rem;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 1.25rem;
+  }
 }

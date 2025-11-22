@@ -11,6 +11,7 @@ interface EditFormProps {
   isOpen: boolean;
   onClose: () => void;
   sendMessage: (data: any) => void;
+  loadSnippet: () => void;
 }
 
 type ViewMode = "write" | "preview";
@@ -19,6 +20,7 @@ const EditForm: React.FC<EditFormProps> = ({
   isOpen,
   onClose,
   sendMessage,
+  loadSnippet,
 }) => {
   const [isRendered, setIsRendered] = useState(isOpen);
   const [title, setTitle] = useState("");
@@ -41,7 +43,7 @@ const EditForm: React.FC<EditFormProps> = ({
   useEffect(() => {
     if (isOpen) {
       setContent(
-        '## Hello, Markdown!\n\n```javascript\nconsole.log("Hello, World!");\n```',
+        '## Hello, Markdown!\n\n```javascript\nconsole.log("Hello, World!");\n```'
       );
       setViewMode("write"); // Default to write mode on open
       setError(""); // Reset error on open
@@ -60,6 +62,7 @@ const EditForm: React.FC<EditFormProps> = ({
       content: content,
       snippetScore: 10000, //TODO 仮置き
     });
+    loadSnippet();
     onClose();
   };
 
@@ -95,7 +98,9 @@ const EditForm: React.FC<EditFormProps> = ({
     <>
       <div className={styles.overlay} onClick={onClose} />
       <div
-        className={`${styles.formContainer} ${isOpen ? styles.formEnter : styles.formExit}`}
+        className={`${styles.formContainer} ${
+          isOpen ? styles.formEnter : styles.formExit
+        }`}
       >
         <div className={styles.formHeader}>
           <h2>スニペットを書く</h2>
@@ -139,7 +144,9 @@ const EditForm: React.FC<EditFormProps> = ({
                 }
               />
               <div
-                className={`${styles.previewArea} ${isMobile && viewMode === "write" ? styles.hidden : ""}`}
+                className={`${styles.previewArea} ${
+                  isMobile && viewMode === "write" ? styles.hidden : ""
+                }`}
               >
                 <MarkdownText content={content} />
               </div>
