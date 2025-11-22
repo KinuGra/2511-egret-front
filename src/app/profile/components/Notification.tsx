@@ -8,6 +8,7 @@ interface NotificationProps {
 	content: string;
 	snippetScore: number;
 	onClose?: () => void;
+	label?: string; // Custom label for the notification (default: "他プレイヤーの投稿")
 }
 
 export default function Notification({
@@ -15,6 +16,7 @@ export default function Notification({
 	content,
 	snippetScore,
 	onClose,
+	label = "他プレイヤーの投稿", // Default label
 }: NotificationProps) {
 	const [isVisible, setIsVisible] = useState(false);
 
@@ -47,7 +49,7 @@ export default function Notification({
 			<div className="bg-gray-200/60 backdrop-blur-md shadow-2xl rounded-b-2xl border-b border-white/40 py-4 px-2 md:py-6 md:px-4">
 				{/* Label */}
 				<div className="text-xs md:text-sm text-gray-600 font-semibold mb-2 px-2">
-					他プレイヤーの投稿
+					{label}
 				</div>
 				
 				{/* Main Content */}
@@ -59,9 +61,9 @@ export default function Notification({
 						</h3>
 					</div>
 
-					{/* Content Area: 60% */}
-					<div className="w-[60%] flex items-center justify-start overflow-hidden">
-						<div className="text-sm md:text-base lg:text-xl xl:text-2xl text-gray-700 line-clamp-3 whitespace-normal break-words w-full font-medium leading-snug">
+					{/* Content Area: 60% for normal, 80% for send confirmation (no score) */}
+					<div className={`${label === '送信できました' ? 'w-[80%]' : 'w-[60%]'} flex items-center justify-start overflow-hidden`}>
+						<div className={`${label === '送信できました' ? 'text-xl md:text-2xl lg:text-3xl xl:text-4xl' : 'text-sm md:text-base lg:text-xl xl:text-2xl'} text-gray-700 line-clamp-3 whitespace-normal break-words w-full font-medium leading-snug`}>
 							<MarkdownText
 								content={content}
 								components={{
@@ -84,15 +86,17 @@ export default function Notification({
 						</div>
 					</div>
 
-					{/* Score Area: 20% */}
-					<div className="w-[20%] flex flex-col items-center justify-center border-l-2 border-gray-100 pl-2 md:pl-6">
-						<span className=" text-[10px] md:text-xs lg:text-sm text-[crimson] font-bold uppercase tracking-widest">
-							Score
-						</span>
-						<span className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-[crimson] leading-none tracking-tighter">
-							{snippetScore}
-						</span>
-					</div>
+					{/* Score Area: 20% - Hidden for send confirmation */}
+					{label !== '送信できました' && (
+						<div className="w-[20%] flex flex-col items-center justify-center border-l-2 border-gray-100 pl-2 md:pl-6">
+							<span className=" text-[10px] md:text-xs lg:text-sm text-[crimson] font-bold uppercase tracking-widest">
+								Score
+							</span>
+							<span className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-[crimson] leading-none tracking-tighter">
+								{snippetScore}
+							</span>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
