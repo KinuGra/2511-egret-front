@@ -8,6 +8,7 @@ import EditButton from "./components/EditButton";
 import EditForm from "./components/EditForm";
 import Notification from "./components/Notification";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import { PlanetaryComparison } from '@/app/profile/components/ComparePlanet';
 import { getSnippet } from "@/lib/firestore/getSnippet";
 
 export default function ProfileScreen() {
@@ -19,19 +20,20 @@ export default function ProfileScreen() {
     snippetScore: number;
   } | null>(null);
 
-  // スニペットを読み込む
-  async function loadSnippet() {
+ // スニペットを読み込む
+async function loadSnippet() {
     const docs = await getSnippet();
     setSnippets(docs);
   }
-
-  const { sendMessage } = useWebSocket({
+	const { sendMessage } = useWebSocket({
     url: "wss://0azgrfwv7j.execute-api.ap-northeast-1.amazonaws.com/Prod/",
     onMessage: (data) => {
       setNotification(data);
       loadSnippet();
     },
   });
+	const scores: [number, number, number] = [100000, 1000, 10030];
+
 
   useEffect(() => {
     loadSnippet();
@@ -48,6 +50,7 @@ export default function ProfileScreen() {
         />
       )}
       <div style={{ backgroundColor: "#efefef" }}>
+        <PlanetaryComparison score={scores} />
         <EngineerComparisonProgress comparison={topEngineerData} />
         <EngineerComparisonProgress comparison={surroundingEngineerData} />
         {snippets.length > 0
