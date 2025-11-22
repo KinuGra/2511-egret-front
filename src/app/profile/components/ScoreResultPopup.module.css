@@ -1,0 +1,172 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1200;
+}
+
+.modal {
+  width: 420px;
+  max-width: calc(100% - 32px);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(10, 10, 20, 0.4);
+  padding: 20px;
+  color: #111;
+  animation: popIn 220ms ease-out;
+}
+
+@keyframes popIn {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.closeFloating {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #374151;
+}
+
+.statusText {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.rawText {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.badge {
+  background: linear-gradient(90deg, #ffd36b, #ff9a6b);
+  color: #5a2a00;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.title {
+  margin: 0;
+}
+
+.content {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.scoreLarge {
+  font-size: 48px;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.subText {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.col {
+  flex: 1;
+  background: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #eef2ff;
+}
+
+.metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.metricItem {
+  width: 46%;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: left;
+}
+
+.metricName {
+  font-size: 12px;
+  color: #374151;
+}
+
+.metricValue {
+  font-weight: 700;
+}
+
+.steps {
+  text-align: left;
+  margin-top: 12px;
+}
+
+.stepsPre {
+  background: #0f172a;
+  color: #e6eef8;
+  padding: 8px;
+  border-radius: 6px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.justification {
+  text-align: left;
+  margin-top: 12px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.confirmBtn {
+  background: linear-gradient(90deg,#6ee7b7,#34d399);
+  color: #042; 
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}

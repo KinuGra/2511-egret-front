@@ -6,6 +6,8 @@ import SnippetCard from "./components/SnippetCard";
 import EngineerComparisonProgress from "./components/EngineerComparisonProgress";
 import EditButton from "./components/EditButton";
 import EditForm from "./components/EditForm";
+import ScoreResultPopup from "./components/ScoreResultPopup";
+import { ScoreSummary } from "@/lib/score/fetchScoreFromAWS";
 import Notification from "./components/Notification";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { PlanetaryComparison } from "@/app/profile/components/ComparePlanet";
@@ -19,6 +21,7 @@ export default function ProfileScreen() {
     content: string;
     snippetScore: number;
   } | null>(null);
+  const [scorePopup, setScorePopup] = useState<ScoreSummary | null>(null);
 
   // スニペットを読み込む
   async function loadSnippet() {
@@ -71,7 +74,17 @@ export default function ProfileScreen() {
         onClose={() => setIsFormVisible(false)}
         sendMessage={sendMessage}
         loadSnippet={loadSnippet}
+        onShowScore={(s: ScoreSummary) => setScorePopup(s)}
       />
+      {scorePopup && (
+        <ScoreResultPopup
+          open={true}
+          summary={scorePopup}
+          onClose={() => setScorePopup(null)}
+          posting={false}
+          posted={true}
+        />
+      )}
     </>
   );
 }

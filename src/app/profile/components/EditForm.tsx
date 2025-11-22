@@ -6,13 +6,19 @@ import MarkdownText from "@/components/MarkdownText";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { sendSnippetToWebSocket } from "./snippetService";
 import { addSnippet } from "../../../lib/firestore/addSnippet";
-import { fetchScoreFromAWS } from "@/lib/score/fetchScoreFromAWS";
+import {
+  fetchScoreFromAWS,
+  computeScoreSummary,
+  ScoreSummary,
+} from "@/lib/score/fetchScoreFromAWS";
+// ScoreResultPopup is managed by parent component
 
 interface EditFormProps {
   isOpen: boolean;
   onClose: () => void;
   sendMessage: (data: any) => void;
   loadSnippet: () => void;
+  onShowScore?: (summary: ScoreSummary) => void;
 }
 
 type ViewMode = "write" | "preview";
@@ -22,12 +28,16 @@ const EditForm: React.FC<EditFormProps> = ({
   onClose,
   sendMessage,
   loadSnippet,
+  onShowScore,
 }) => {
   const [isRendered, setIsRendered] = useState(isOpen);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("write");
   const [error, setError] = useState("");
+  const [scoreSummary, setScoreSummary] = useState<ScoreSummary | null>(null);
+  const [posting, setPosting] = useState(false);
+  const [posted, setPosted] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Effect to handle mount/unmount animations
@@ -61,23 +71,52 @@ const EditForm: React.FC<EditFormProps> = ({
     // Bedrockによる採点
     const evaluationResult = await fetchScoreFromAWS(content, content.length);
     console.log("evaluationResult: ", evaluationResult);
-    // evaluationResult が null/undefined の場合は 0 にし、整数に丸める
-    const rawScore = evaluationResult?.final_results?.final_weighted_score ?? 0;
-    const scoreFromAWS = Number.isFinite(Number(rawScore))
-      ? Math.round(Number(rawScore))
-      : 0;
-    // WebSocket
-    sendSnippetToWebSocket(sendMessage, title, content, scoreFromAWS);
-    // Firestoreにスニペットを保存
-    await addSnippet({
-      title: title,
-      content: content,
-      snippetScore: scoreFromAWS,
-    });
-    // スニペットの表示を更新
-    await loadSnippet();
+    // Normalize into UI-friendly summary (handles nulls and rounding)
+    const summary = computeScoreSummary(evaluationResult);
+    setScoreSummary(summary);
+    // 投稿を行い、完了後に親に結果を渡してフォームを閉じる
+    await handleConfirmPost(summary);
+    if (onShowScore) onShowScore(summary);
     onClose();
   };
+
+  const handleConfirmPost = async (providedSummary?: ScoreSummary | null) => {
+    // Use provided summary if available to avoid relying on state update timing
+    const s = providedSummary ?? scoreSummary;
+    try {
+      setPosting(true);
+      if (!s) {
+        // fallback: zero score
+        await sendSnippetToWebSocket(sendMessage, title, content, 0);
+        await addSnippet({
+          id: Math.floor(Date.now() / 1000),
+          title: title,
+          content: content,
+          snippetScore: 0,
+        });
+      } else {
+        const final = s.finalWeightedScore ?? 0;
+        await sendSnippetToWebSocket(sendMessage, title, content, final);
+        await addSnippet({
+          id: Math.floor(Date.now() / 1000),
+          title: title,
+          content: content,
+          snippetScore: final,
+        });
+      }
+      await loadSnippet();
+      setPosted(true);
+      // 投稿完了後は親に表示を委ねるため、外部でポップアップを表示してもらう
+      // 親に渡すための callback は handleSubmit の外で呼びます
+    } catch (err) {
+      console.error("投稿中にエラーが発生しました", err);
+    } finally {
+      setPosting(false);
+      // do not auto-close popup or the edit form; popup is closed by user action
+    }
+  };
+
+  // popup is managed by parent; no local cancel
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -172,6 +211,7 @@ const EditForm: React.FC<EditFormProps> = ({
           </button>
         </form>
       </div>
+      {/* ScoreResultPopup is displayed and managed by parent (ProfileScreen) */}
     </>
   );
 };
