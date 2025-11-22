@@ -6,12 +6,34 @@ import SnippetCard from "./components/SnippetCard";
 import EngineerComparisonProgress from "./components/EngineerComparisonProgress";
 import EditButton from "./components/EditButton";
 import EditForm from "./components/EditForm";
+import Notification from "./components/Notification";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 export default function ProfileScreen() {
 	const [isFormVisible, setIsFormVisible] = useState(false);
+	const [notification, setNotification] = useState<{
+		title: string;
+		content: string;
+		snippetScore: number;
+	} | null>(null);
+
+	const { sendMessage } = useWebSocket({
+		url: "wss://0prqanzwqa.execute-api.ap-northeast-1.amazonaws.com/Prod/",
+		onMessage: (data) => {
+			setNotification(data);
+		},
+	});
 
 	return (
 		<>
+			{notification && (
+				<Notification
+					title={notification.title}
+					content={notification.content}
+					snippetScore={notification.snippetScore}
+					onClose={() => setNotification(null)}
+				/>
+			)}
 			<div style={{ backgroundColor: "#efefef" }}>
 				<EngineerComparisonProgress comparison={topEngineerData} />
 				<EngineerComparisonProgress comparison={surroundingEngineerData} />
@@ -27,7 +49,11 @@ export default function ProfileScreen() {
 				))}
 			</div>
 			<EditButton onClick={() => setIsFormVisible(true)} />
-			<EditForm isOpen={isFormVisible} onClose={() => setIsFormVisible(false)} />
+			<EditForm 
+				isOpen={isFormVisible} 
+				onClose={() => setIsFormVisible(false)}
+				sendMessage={sendMessage}
+			/>
 		</>
 	);
 }

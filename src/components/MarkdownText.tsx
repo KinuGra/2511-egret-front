@@ -6,12 +6,25 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github.css";
 import styles from "./MarkdownText.module.css";
 
-export default function MarkdownText({ content }: { content: string }) {
+import type { Components } from "react-markdown";
+
+interface MarkdownTextProps {
+	content: string;
+	components?: Components;
+	className?: string;
+}
+
+export default function MarkdownText({
+	content,
+	components,
+	className,
+}: MarkdownTextProps) {
 	return (
-		<div className={styles.markdown}>
+		<div className={`${styles.markdown} ${className || ""}`}>
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm, remarkBreaks]}
 				rehypePlugins={[rehypeHighlight]}
+				components={components}
 			>
 				{content}
 			</ReactMarkdown>
