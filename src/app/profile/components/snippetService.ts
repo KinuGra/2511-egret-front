@@ -1,12 +1,13 @@
 export const sendSnippetToWebSocket = (
 	sendMessage: (data: any) => void,
 	title: string,
-	content: string
+	content: string,
+	finalScore: number,
 ) => {
 	const payload = {
 		title,
 		content,
-		snippetScore: 50,
+		snippetScore: finalScore,
 	};
 	sendMessage(payload);
 };
