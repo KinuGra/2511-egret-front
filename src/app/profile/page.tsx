@@ -16,7 +16,9 @@ import { getSnippet } from "@/lib/firestore/getSnippet";
 export default function ProfileScreen() {
   const [snippets, setSnippets] = useState<any[]>([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  // Notification data with optional type for message classification
   const [notification, setNotification] = useState<{
+    type?: string;
     title: string;
     content: string;
     snippetScore: number;
@@ -31,8 +33,19 @@ export default function ProfileScreen() {
   const { sendMessage } = useWebSocket({
     url: "wss://etuqhxwxk1.execute-api.ap-northeast-1.amazonaws.com/Prod/",
     onMessage: (data) => {
-      setNotification(data);
-      loadSnippet();
+      if (data.type === 'send_confirmation') {
+        // Send confirmation message
+        setNotification({
+          type: 'send_confirmation',
+          title: '✓',
+          content: data.message || '送信できました',
+          snippetScore: data.snippetScore || 0, // Use score from server if available
+        });
+      } else {
+        // Other player's post
+        setNotification(data);
+        loadSnippet();
+      }
     },
   });
   const scores: [number, number, number] = [100000, 1000, 10030];
@@ -48,6 +61,11 @@ export default function ProfileScreen() {
           title={notification.title}
           content={notification.content}
           snippetScore={notification.snippetScore}
+          label={
+            notification.type === 'send_confirmation'
+              ? '送信できました'
+              : '他プレイヤーの投稿'
+          }
           onClose={() => setNotification(null)}
         />
       )}
