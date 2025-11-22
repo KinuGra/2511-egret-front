@@ -8,6 +8,7 @@ import EditButton from "./components/EditButton";
 import EditForm from "./components/EditForm";
 import Notification from "./components/Notification";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import { PlanetaryComparison } from '@/app/profile/components/ComparePlanet';
 
 export default function ProfileScreen() {
 	const [isFormVisible, setIsFormVisible] = useState(false);
@@ -23,6 +24,7 @@ export default function ProfileScreen() {
 			setNotification(data);
 		},
 	});
+	const scores: [number, number, number] = [100000, 1000, 10030];
 
 	return (
 		<>
@@ -34,6 +36,7 @@ export default function ProfileScreen() {
 					onClose={() => setNotification(null)}
 				/>
 			)}
+			<PlanetaryComparison score={scores} />
 			<div style={{ backgroundColor: "#efefef" }}>
 				<EngineerComparisonProgress comparison={topEngineerData} />
 				<EngineerComparisonProgress comparison={surroundingEngineerData} />
