@@ -6,6 +6,7 @@ import MarkdownText from "@/components/MarkdownText";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { sendSnippetToWebSocket } from "./snippetService";
 import { addSnippet } from "../../../lib/firestore/addSnippet";
+import { fetchScoreFromAWS } from "@/lib/score/fetchScoreFromAWS";
 
 interface EditFormProps {
   isOpen: boolean;
@@ -50,19 +51,31 @@ const EditForm: React.FC<EditFormProps> = ({
     }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) {
       setError("内容は必須です。入力してください。");
       return;
     }
-    sendSnippetToWebSocket(sendMessage, title, content);
-    addSnippet({
+
+    // Bedrockによる採点
+    const evaluationResult = await fetchScoreFromAWS(content, content.length);
+    console.log("evaluationResult: ", evaluationResult);
+    // evaluationResult が null/undefined の場合は 0 にし、整数に丸める
+    const rawScore = evaluationResult?.final_results?.final_weighted_score ?? 0;
+    const scoreFromAWS = Number.isFinite(Number(rawScore))
+      ? Math.round(Number(rawScore))
+      : 0;
+    // WebSocket
+    sendSnippetToWebSocket(sendMessage, title, content, scoreFromAWS);
+    // Firestoreにスニペットを保存
+    await addSnippet({
       title: title,
       content: content,
-      snippetScore: 10000, //TODO 仮置き
+      snippetScore: scoreFromAWS,
     });
-    loadSnippet();
+    // スニペットの表示を更新
+    await loadSnippet();
     onClose();
   };
 
