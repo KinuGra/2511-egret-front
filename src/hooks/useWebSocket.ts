@@ -8,6 +8,11 @@ interface UseWebSocketOptions {
 
 export const useWebSocket = ({ url, onMessage, clientId }: UseWebSocketOptions) => {
   const ws = useRef<WebSocket | null>(null);
+  const onMessageRef = useRef(onMessage);
+
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
 
   useEffect(() => {
     ws.current = new WebSocket(url);
@@ -22,7 +27,7 @@ export const useWebSocket = ({ url, onMessage, clientId }: UseWebSocketOptions) 
         if (clientId && data?.clientId === clientId) {
           return;
         }
-        onMessage(data);
+        onMessageRef.current(data);
       } catch (error) {
         console.error("Failed to parse WebSocket message:", error);
       }
@@ -39,7 +44,7 @@ export const useWebSocket = ({ url, onMessage, clientId }: UseWebSocketOptions) 
     return () => {
       ws.current?.close();
     };
-  }, [url, onMessage, clientId]);
+  }, [url, clientId]);
 
   const sendMessage = (data: any) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
