@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Snippet } from "@/types/snippet";
 import SnippetCard from "./components/SnippetCard";
 import EngineerComparisonProgress from "./components/EngineerComparisonProgress";
@@ -28,8 +28,10 @@ export default function ProfileScreen() {
     const docs = await getSnippet();
     setSnippets(docs);
   }
+  const clientId = useMemo(() => crypto.randomUUID(), []);
   const { sendMessage } = useWebSocket({
     url: "wss://etuqhxwxk1.execute-api.ap-northeast-1.amazonaws.com/Prod/",
+    clientId,
     onMessage: (data) => {
       setNotification(data);
       loadSnippet();
