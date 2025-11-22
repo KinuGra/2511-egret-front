@@ -61,7 +61,11 @@ const EditForm: React.FC<EditFormProps> = ({
     // Bedrockによる採点
     const evaluationResult = await fetchScoreFromAWS(content, content.length);
     console.log("evaluationResult: ", evaluationResult);
-    const scoreFromAWS = evaluationResult.final_results.final_weighted_score;
+    // evaluationResult が null/undefined の場合は 0 にし、整数に丸める
+    const rawScore = evaluationResult?.final_results?.final_weighted_score ?? 0;
+    const scoreFromAWS = Number.isFinite(Number(rawScore))
+      ? Math.round(Number(rawScore))
+      : 0;
     // WebSocket
     sendSnippetToWebSocket(sendMessage, title, content, scoreFromAWS);
     // Firestoreにスニペットを保存
