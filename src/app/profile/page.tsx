@@ -1,8 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import { Snippet } from "@/types/snippet";
 import SnippetCard from "./components/SnippetCard";
 import EngineerComparisonProgress from "./components/EngineerComparisonProgress";
+import EditButton from "./components/EditButton";
+import EditForm from "./components/EditForm";
 
 export default function ProfileScreen() {
+	const [isFormVisible, setIsFormVisible] = useState(false);
+
 	return (
 		<>
 			<div style={{ backgroundColor: "#efefef" }}>
@@ -19,6 +26,8 @@ export default function ProfileScreen() {
 					</div>
 				))}
 			</div>
+			<EditButton onClick={() => setIsFormVisible(true)} />
+			<EditForm isOpen={isFormVisible} onClose={() => setIsFormVisible(false)} />
 		</>
 	);
 }
