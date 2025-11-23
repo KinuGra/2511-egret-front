@@ -124,7 +124,7 @@ function Earth({ size, position, score }) {
       {/* Label above Earth */}
       <Billboard position={[0, size + 1.5, 0]}>
         <Text
-          fontSize={0.4}
+          fontSize={0.5}
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
@@ -138,7 +138,7 @@ function Earth({ size, position, score }) {
       {/* Score display */}
       <Billboard position={[0, size + 1, 0]}>
         <Text
-          fontSize={0.5}
+          fontSize={0.6}
           color="#00ff88"
           anchorX="center"
           anchorY="middle"
@@ -251,10 +251,24 @@ function Jupiter({ size, position, score }) {
         />
       </mesh>
       
+      {/* Label above Jupiter */}
+      <Billboard position={[0, size + 1.5, 0]}>
+        <Text
+          fontSize={0.5}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#000000"
+        >
+          活躍するプレイヤー
+        </Text>
+      </Billboard>
+      
       {/* Score display */}
       <Billboard position={[0, size + 1, 0]}>
         <Text
-          fontSize={0.5}
+          fontSize={0.6}
           color="#00ff88"
           anchorX="center"
           anchorY="middle"
@@ -360,10 +374,24 @@ function Sun({ size, position, score }) {
         color="#ffaa00"
       />
       
+      {/* Label above Sun */}
+      <Billboard position={[position[0], position[1] + size + 1.5, position[2]]}>
+        <Text
+          fontSize={0.5}
+          color="#ffffff"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#000000"
+        >
+          他プレイヤー
+        </Text>
+      </Billboard>
+      
       {/* Score display */}
       <Billboard position={[position[0], position[1] + size + 1, position[2]]}>
         <Text
-          fontSize={0.5}
+          fontSize={0.6}
           color="#00ff88"
           anchorX="center"
           anchorY="middle"

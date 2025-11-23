@@ -71,6 +71,8 @@ export default function ProfileScreen() {
       )}
       <div style={{ backgroundColor: "#efefef" }}>
         <PlanetaryComparison score={scores} />
+        {/* Responsive spacer */}
+        <div className="h-4 md:h-8 lg:h-12" />
         <EngineerComparisonProgress comparison={topEngineerData} />
         <EngineerComparisonProgress comparison={surroundingEngineerData} />
         {snippets.length > 0
