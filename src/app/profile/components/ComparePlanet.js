@@ -261,7 +261,7 @@ function Jupiter({ size, position, score }) {
           outlineWidth={0.02}
           outlineColor="#000000"
         >
-          活躍するプレイヤー
+          活躍するエンジニア
         </Text>
       </Billboard>
 

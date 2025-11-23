@@ -9,6 +9,7 @@ import EditForm from "./components/EditForm";
 import ScoreResultPopup from "./components/ScoreResultPopup";
 import { ScoreSummary } from "@/lib/score/fetchScoreFromAWS";
 import Notification from "./components/Notification";
+import WarningPopup from "./components/WarningPopup";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { PlanetaryComparison } from "@/app/profile/components/ComparePlanet";
 import { getSnippet } from "@/lib/firestore/getSnippet";
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
     snippetScore: number;
   } | null>(null);
   const [scorePopup, setScorePopup] = useState<ScoreSummary | null>(null);
+  const [showWarning, setShowWarning] = useState<boolean>(false);
 
   // スニペットを読み込む
   async function loadSnippet() {
@@ -57,7 +59,7 @@ export default function ProfileScreen() {
     },
   });
   // PlanetaryComparison に渡すスコア配列
-  // [あなたのスコア, 活躍するプレイヤーのスコア, 他プレイヤーの平均スコア]
+  // [あなたのスコア, 活躍するエンジニアのスコア, 他プレイヤーの平均スコア]
   const surroundingAvg =
     otherPlayerScores.length > 0
       ? Math.round(
@@ -66,7 +68,7 @@ export default function ProfileScreen() {
         )
       : 0;
   // 目標スコアは固定（変化しない）
-  const TOP_TARGET_SCORE = 5200; // 活躍するプレイヤーの目標を 5200 に固定
+  const TOP_TARGET_SCORE = 5200; // 活躍するエンジニアの目標を 5200 に固定
   // 他プレイヤーの目標は otherPlayers の平均点を使用
   const SURROUNDING_TARGET_SCORE = surroundingAvg;
 
@@ -78,7 +80,25 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadSnippet();
+    // 起動/リロード時に警告ポップアップを表示
+    setShowWarning(true);
   }, []);
+
+  // 遅れ（percent）はプログレスバーと同じ計算を使う
+  const computeDelayPercent = (myScore: number, target: number) => {
+    if (!target || target <= 0) return 0;
+    const rawPercentage = (myScore / target) * 100;
+    const delay = Math.max(0, 100 - rawPercentage);
+    return Math.round(delay);
+  };
+
+  const percentToTop = computeDelayPercent(myTotalScore, TOP_TARGET_SCORE);
+  const percentToSurrounding = computeDelayPercent(
+    myTotalScore,
+    SURROUNDING_TARGET_SCORE
+  );
+  // 学習遅延の点数は「活躍するエンジニアの目標点 - 自分のスコア」
+  const delayPointsToTop = Math.max(0, TOP_TARGET_SCORE - myTotalScore);
 
   return (
     <>
@@ -96,12 +116,20 @@ export default function ProfileScreen() {
         />
       )}
       <div style={{ backgroundColor: "#efefef" }}>
+        <WarningPopup
+          open={showWarning}
+          // 表示する遅れの点数は目標 - 自分のスコア
+          score={delayPointsToTop}
+          percent1={percentToTop}
+          percent2={percentToSurrounding}
+          onClose={() => setShowWarning(false)}
+        />
         <PlanetaryComparison score={scores} />
         {/* Responsive spacer */}
         <div className="h-4 md:h-8 lg:h-12" />
         <EngineerComparisonProgress
           comparison={{
-            title: "VS 活躍するプレイヤー",
+            title: "VS 活躍するエンジニア",
             // My Score は Firestore の合算値を使う（両方とも同じ値）
             myScore: myTotalScore,
             targetScore: TOP_TARGET_SCORE,
@@ -152,7 +180,7 @@ export default function ProfileScreen() {
 }
 
 const topEngineerData = {
-  title: "VS 活躍するプレイヤー",
+  title: "VS 活躍するエンジニア",
   myScore: 650,
   targetScore: 800,
   colorCode: "red",

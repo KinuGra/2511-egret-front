@@ -37,7 +37,7 @@ const WarningPopup: React.FC<Props> = ({
         <div className={styles.content}>
           <p className={styles.mainMessage}>
             <strong>同世代の</strong>
-            <span className={styles.highlight}>トップエンジニア</span>
+            <span className={styles.highlight}>活躍するエンジニア</span>
             <strong>に比べ、</strong>
             <span className={styles.percentHighlight}>{percent1}%</span>
             <strong>の学習遅延、</strong>
@@ -46,8 +46,10 @@ const WarningPopup: React.FC<Props> = ({
           </p>
 
           <p className={styles.subMessage}>
-            さらに、<span className={styles.highlight2}>周囲の平均エンジニア</span>
-            と比べても <span className={styles.percentHighlight2}>{percent2}%</span> の
+            さらに、
+            <span className={styles.highlight2}>周囲の平均エンジニア</span>
+            と比べても{" "}
+            <span className={styles.percentHighlight2}>{percent2}%</span> の
             遅れが存在します。この差は、キャリア形成に深刻な影響を与える可能性があります。
             今すぐ学びを投稿し、遅れを取り戻しましょう！
           </p>
