@@ -1,6 +1,6 @@
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import { Snippet } from "../../types/snippet.ts";
+import { Snippet } from "../../types/snippet";
 
 export async function addSnippet(snippet: Snippet) {
   try {
