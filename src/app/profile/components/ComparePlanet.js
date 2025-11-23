@@ -443,8 +443,6 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
   const minSize = 0.3;
   const maxSize = 3.5;
 
-  // 追加: レスポンシブテキストサイズ
-  const textFontSize = isMobile ? 5 : 10;
   const earthSize = minSize + (earthScore / maxScore) * (maxSize - minSize);
   const jupiterSize = minSize + (jupiterScore / maxScore) * (maxSize - minSize);
   const sunSize = minSize + (sunScore / maxScore) * (maxSize - minSize);
@@ -484,22 +482,15 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
           position={[-5, 5, -5]}
           intensity={0.5}
         />
+
+        {/* Background Text - RUNNING (top line) */}
         <Text
-          position={[0, 0, -15]}
-          fontSize={textFontSize}
+          position={[0, 7, -15]}
+          fontSize={isMobile ? 4 : 7}
           color="white"
           anchorX="center"
           anchorY="middle"
-          letterSpacing={0.1}
-        ></Text>
-        {/* Background Text - positioned behind planets */}
-        <Text
-          position={[0, 0, -15]}
-          fontSize={10}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-          letterSpacing={0.1}
+          letterSpacing={isMobile ? 0.4 : 0.5}
         >
           <meshStandardMaterial
             color="white"
@@ -508,6 +499,23 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
             side={THREE.DoubleSide}
           />
           RUNNING
+        </Text>
+
+        {/* Background Text - LATE (bottom line) */}
+        <Text
+          position={[0, 5, -15]}
+          fontSize={isMobile ? 3 : 5.5}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          letterSpacing={isMobile ? 0.6 : 0.8}
+        >
+          <meshStandardMaterial
+            color="white"
+            transparent={true}
+            opacity={0.7}
+            side={THREE.DoubleSide}
+          />
           LATE
         </Text>
 
