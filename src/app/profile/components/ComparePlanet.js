@@ -10,7 +10,7 @@ import * as THREE from 'three';
  */
 function Earth({ size, position, score }) {
   const meshRef = useRef();
-  
+
   // Slow rotation animation
   useFrame((state, delta) => {
     if (meshRef.current) {
@@ -50,7 +50,7 @@ function Earth({ size, position, score }) {
     landGradient.addColorStop(0, '#10b981');
     landGradient.addColorStop(0.5, '#059669');
     landGradient.addColorStop(1, '#047857');
-    
+
     // North America
     ctx.fillStyle = landGradient;
     ctx.beginPath();
@@ -59,7 +59,7 @@ function Earth({ size, position, score }) {
     ctx.beginPath();
     ctx.arc(245, 185, 55, 0, Math.PI * 2);
     ctx.fill();
-    
+
     // South America
     ctx.beginPath();
     ctx.arc(285, 325, 50, 0, Math.PI * 2);
@@ -112,7 +112,7 @@ function Earth({ size, position, score }) {
       {/* Earth planet */}
       <mesh ref={meshRef} castShadow receiveShadow>
         <sphereGeometry args={[size, 64, 64]} />
-        <meshStandardMaterial 
+        <meshStandardMaterial
           map={earthTexture}
           roughness={0.6}
           metalness={0.15}
@@ -120,7 +120,7 @@ function Earth({ size, position, score }) {
           emissiveIntensity={0.15}
         />
       </mesh>
-      
+
       {/* Label above Earth */}
       <Billboard position={[0, size + 1.5, 0]}>
         <Text
@@ -134,7 +134,7 @@ function Earth({ size, position, score }) {
           あなた
         </Text>
       </Billboard>
-      
+
       {/* Score display */}
       <Billboard position={[0, size + 1, 0]}>
         <Text
@@ -157,7 +157,7 @@ function Earth({ size, position, score }) {
  */
 function Jupiter({ size, position, score }) {
   const meshRef = useRef();
-  
+
   useFrame((state, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.08;
@@ -198,7 +198,7 @@ function Jupiter({ size, position, score }) {
       const width = Math.random() * 100 + 50;
       const height = Math.random() * 12 + 4;
       const brightness = 0.95 + Math.random() * 0.1;
-      
+
       ctx.fillStyle = `rgba(${220 * brightness}, ${190 * brightness}, ${150 * brightness}, ${0.15 + Math.random() * 0.2})`;
       ctx.fillRect(x, y, width, height);
     }
@@ -209,17 +209,17 @@ function Jupiter({ size, position, score }) {
       const y = Math.random() * 512;
       const radiusX = Math.random() * 25 + 12;
       const radiusY = Math.random() * 18 + 8;
-      
+
       ctx.save();
       ctx.translate(x, y);
       ctx.scale(radiusX / radiusY, 1);
-      
+
       const stormGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radiusY);
       stormGradient.addColorStop(0, 'rgba(255, 250, 240, 0.6)');
       stormGradient.addColorStop(0.5, 'rgba(245, 235, 220, 0.4)');
       stormGradient.addColorStop(1, 'rgba(235, 220, 200, 0)');
       ctx.fillStyle = stormGradient;
-      
+
       ctx.beginPath();
       ctx.arc(0, 0, radiusY, 0, Math.PI * 2);
       ctx.fill();
@@ -244,13 +244,13 @@ function Jupiter({ size, position, score }) {
     <group position={position}>
       <mesh ref={meshRef} castShadow receiveShadow>
         <sphereGeometry args={[size, 64, 64]} />
-        <meshStandardMaterial 
+        <meshStandardMaterial
           map={jupiterTexture}
           roughness={0.65}
           metalness={0.08}
         />
       </mesh>
-      
+
       {/* Label above Jupiter */}
       <Billboard position={[0, size + 1.5, 0]}>
         <Text
@@ -264,7 +264,7 @@ function Jupiter({ size, position, score }) {
           活躍するプレイヤー
         </Text>
       </Billboard>
-      
+
       {/* Score display */}
       <Billboard position={[0, size + 1, 0]}>
         <Text
@@ -287,7 +287,7 @@ function Jupiter({ size, position, score }) {
  */
 function Sun({ size, position, score }) {
   const meshRef = useRef();
-  
+
   useFrame((state, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.05;
@@ -347,7 +347,7 @@ function Sun({ size, position, score }) {
       {/* Sun with glow effect */}
       <mesh ref={meshRef} position={position}>
         <sphereGeometry args={[size, 64, 64]} />
-        <meshStandardMaterial 
+        <meshStandardMaterial
           map={sunTexture}
           emissive="#ff6600"
           emissiveIntensity={1.5}
@@ -355,11 +355,11 @@ function Sun({ size, position, score }) {
           metalness={0}
         />
       </mesh>
-      
+
       {/* Outer glow */}
       <mesh position={position}>
         <sphereGeometry args={[size * 1.1, 32, 32]} />
-        <meshBasicMaterial 
+        <meshBasicMaterial
           color="#ffaa00"
           transparent={true}
           opacity={0.2}
@@ -367,13 +367,13 @@ function Sun({ size, position, score }) {
       </mesh>
 
       {/* Point light from sun */}
-      <pointLight 
-        position={position} 
-        intensity={2} 
+      <pointLight
+        position={position}
+        intensity={2}
         distance={50}
         color="#ffaa00"
       />
-      
+
       {/* Label above Sun */}
       <Billboard position={[position[0], position[1] + size + 1.5, position[2]]}>
         <Text
@@ -387,7 +387,7 @@ function Sun({ size, position, score }) {
           他プレイヤー
         </Text>
       </Billboard>
-      
+
       {/* Score display */}
       <Billboard position={[position[0], position[1] + size + 1, position[2]]}>
         <Text
@@ -411,7 +411,7 @@ function Sun({ size, position, score }) {
 export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
   // Calculate sizes based on scores
   const [earthScore, jupiterScore, sunScore] = score;
-  
+
   // Track window size for responsive design
   const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
 
@@ -423,7 +423,7 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
         height: window.innerHeight
       });
     };
-    
+
     updateSize();
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
@@ -431,18 +431,20 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
 
   // Detect mobile device (portrait orientation)
   const isMobile = windowSize.width > 0 && windowSize.width / windowSize.height < 1.0;
-  
+
   // Responsive settings
   const cameraPosition = isMobile ? [0, 8, 22] : [0, 5, 15];
   const cameraFov = isMobile ? 60 : 50;
   const planetSpacing = isMobile ? 6.5 : 8;
   const containerHeight = isMobile ? '500px' : '600px';
-  
+
   // Normalize sizes (min: 0.8, max: 3.5)
   const maxScore = Math.max(earthScore, jupiterScore, sunScore);
-  const minSize = 0.8;
+  const minSize = 0.3;
   const maxSize = 3.5;
-  
+
+  // 追加: レスポンシブテキストサイズ
+  const textFontSize = isMobile ? 5 : 10;
   const earthSize = minSize + (earthScore / maxScore) * (maxSize - minSize);
   const jupiterSize = minSize + (jupiterScore / maxScore) * (maxSize - minSize);
   const sunSize = minSize + (sunScore / maxScore) * (maxSize - minSize);
@@ -455,19 +457,19 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
         gl={{ antialias: true, alpha: false }}
       >
         {/* Background stars */}
-        <Stars 
-          radius={100} 
-          depth={50} 
-          count={5000} 
-          factor={4} 
-          saturation={0} 
-          fade 
-          speed={1} 
+        <Stars
+          radius={100}
+          depth={50}
+          count={5000}
+          factor={4}
+          saturation={0}
+          fade
+          speed={1}
         />
 
         {/* Ambient lighting */}
         <ambientLight intensity={0.3} />
-        
+
         {/* Main directional light */}
         <directionalLight
           position={[10, 10, 5]}
@@ -482,6 +484,32 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
           position={[-5, 5, -5]}
           intensity={0.5}
         />
+        <Text
+          position={[0, 0, -15]}
+          fontSize={textFontSize}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          letterSpacing={0.1}
+        ></Text>
+        {/* Background Text - positioned behind planets */}
+        <Text
+          position={[0, 0, -15]}
+          fontSize={10}
+          color="white"
+          anchorX="center"
+          anchorY="middle"
+          letterSpacing={0.1}
+        >
+          <meshStandardMaterial
+            color="white"
+            transparent={true}
+            opacity={0.7}
+            side={THREE.DoubleSide}
+          />
+          RUNNING
+          LATE
+        </Text>
 
         {/* Planets positioned horizontally with responsive spacing */}
         <Earth size={earthSize} position={[-planetSpacing, 0, 0]} score={earthScore} />
@@ -489,7 +517,7 @@ export function PlanetaryComparison({ score = [1000, 50000, 100000] }) {
         <Sun size={sunSize} position={[planetSpacing, 0, 0]} score={sunScore} />
 
         {/* Mouse controls for camera */}
-        <OrbitControls 
+        <OrbitControls
           enableZoom={true}
           enablePan={true}
           enableRotate={true}
