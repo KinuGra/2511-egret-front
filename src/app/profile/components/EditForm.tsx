@@ -11,6 +11,7 @@ import {
   computeScoreSummary,
   ScoreSummary,
 } from "@/lib/score/fetchScoreFromAWS";
+import { scoreSnippet } from "@/lib/score/ragScoreClient";
 // ScoreResultPopup is managed by parent component
 
 interface EditFormProps {
@@ -76,10 +77,37 @@ const EditForm: React.FC<EditFormProps> = ({
       console.log("evaluationResult: ", evaluationResult);
       // Normalize into UI-friendly summary (handles nulls and rounding)
       const summary = computeScoreSummary(evaluationResult);
-      setScoreSummary(summary);
+
+      // 別の採点ロジック（RAG）の total を取得し、AWS の final と平均をとる
+      let averagedFinal = summary.finalWeightedScore ?? 0;
+      try {
+        const ragResp = await scoreSnippet(
+          title || null,
+          content,
+          content.length
+        );
+        const otherTotal =
+          typeof ragResp?.total === "number" ? ragResp.total : 0;
+        // 平均を取って整数化
+        averagedFinal = Math.round(
+          (Number(averagedFinal) + Number(otherTotal)) / 2
+        );
+        console.log("RAG response:", ragResp, "averagedFinal:", averagedFinal);
+      } catch (err) {
+        console.warn("RAG scoring failed, falling back to AWS final", err);
+      }
+
+      // 平均値でポップアップに表示するために表示用の summary を作成
+      const displaySummary: ScoreSummary = {
+        ...summary,
+        finalWeightedScore: averagedFinal,
+        finalWeightedScoreRaw: averagedFinal,
+      };
+      setScoreSummary(displaySummary);
+
       // 投稿を行い、完了後に親に結果を渡してフォームを閉じる
-      await handleConfirmPost(summary);
-      if (onShowScore) onShowScore(summary);
+      await handleConfirmPost(summary, averagedFinal);
+      if (onShowScore) onShowScore(displaySummary);
       onClose();
     } catch (err) {
       console.error("採点中にエラーが発生しました", err);
@@ -89,22 +117,26 @@ const EditForm: React.FC<EditFormProps> = ({
     }
   };
 
-  const handleConfirmPost = async (providedSummary?: ScoreSummary | null) => {
+  const handleConfirmPost = async (
+    providedSummary?: ScoreSummary | null,
+    providedFinalScore?: number
+  ) => {
     // Use provided summary if available to avoid relying on state update timing
     const s = providedSummary ?? scoreSummary;
     try {
       setPosting(true);
       if (!s) {
         // fallback: zero score
-        await sendSnippetToWebSocket(sendMessage, title, content, 0);
+        const finalToUse = providedFinalScore ?? 0;
+        await sendSnippetToWebSocket(sendMessage, title, content, finalToUse);
         await addSnippet({
           id: Math.floor(Date.now() / 1000),
           title: title,
           content: content,
-          snippetScore: 0,
+          snippetScore: finalToUse,
         });
       } else {
-        const final = s.finalWeightedScore ?? 0;
+        const final = providedFinalScore ?? s.finalWeightedScore ?? 0;
         await sendSnippetToWebSocket(sendMessage, title, content, final);
         await addSnippet({
           id: Math.floor(Date.now() / 1000),
@@ -178,12 +210,12 @@ const EditForm: React.FC<EditFormProps> = ({
             <input
               type="text"
               id="snippet-title"
-                placeholder="スニペットのタイトル"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                disabled={isBusy}
-              />
-            </div>
+              placeholder="スニペットのタイトル"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={isBusy}
+            />
+          </div>
 
           <div
             className={styles.formGroup}
@@ -220,7 +252,11 @@ const EditForm: React.FC<EditFormProps> = ({
           </div>
 
           {error && <p className={styles.errorText}>{error}</p>}
-          <button type="submit" className={styles.submitButton} disabled={isBusy}>
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isBusy}
+          >
             {isBusy ? "採点中..." : "投稿する"}
           </button>
         </form>
