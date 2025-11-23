@@ -125,6 +125,7 @@ export function computeScoreSummary(parsed: AwsParsedResponse | null): ScoreSumm
   if (!parsed) {
     return {
       finalWeightedScore: 0,
+      finalWeightedScoreRaw: 0,
       averageQualityScore: 0,
       individualScores: {},
       characterCount: 0,
