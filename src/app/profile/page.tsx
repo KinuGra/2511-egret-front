@@ -41,7 +41,7 @@ export default function ProfileScreen() {
     setMyTotalScore(total);
   }
   const { sendMessage } = useWebSocket({
-    url: "wss://etuqhxwxk1.execute-api.ap-northeast-1.amazonaws.com/Prod/",
+    url: "wss://yszuujawa7.execute-api.ap-northeast-1.amazonaws.com/Prod/",
     onMessage: (data) => {
       if (data.type === "send_confirmation") {
         // Send confirmation message

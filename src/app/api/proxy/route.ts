@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const TARGET = "https://qcssoo53c7.execute-api.ap-northeast-1.amazonaws.com/Prod";
+const TARGET = "https://r8a9qdm4xg.execute-api.ap-northeast-1.amazonaws.com/Prod/";
 
 export async function POST(request: Request) {
   try {
